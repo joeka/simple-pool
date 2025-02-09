@@ -20,33 +20,50 @@ enum BallType {
   Eight
 }
 
+function typeFromNumber(number?: number): BallType {
+  if (number === undefined) {
+    return BallType.Cue
+  } else if (number >= 1 && number <= 7) {
+    return BallType.Low
+  } else if (number >= 9 && number <= 15) {
+    return BallType.High
+  } else if (number == 8) {
+    return BallType.Eight
+  } else {
+    return BallType.Cue
+  }
+}
+
+function nameFromNumber(number?: number): string {
+  if (number === undefined) {
+    return "CueBall"
+  } else if (number >= 1 && number <= 15) {
+    return "Ball" + number
+  } else {
+    return "CueBall"
+  }
+}
+
+export type BallArgs = {
+  number?: number,
+  pos?: Vector
+}
+
 export class Ball extends Actor {
-  number: number
+  number?: number
   type: BallType
 
 
-  constructor(number: number, pos?: Vector) {
+  constructor(config: BallArgs) {
     super({
-      name: 'Ball' + number,
+      name: nameFromNumber(config.number),
       width: 71,
       height: 71,
       anchor: vec(0, 0),
-      pos: pos
+      pos: config.pos
     });
-    this.number = number
-    this.type = this.typeFromNumber(number)
-  }
-
-  typeFromNumber(number: number): BallType {
-    if (number >= 1 && number <= 7) {
-      return BallType.Low
-    } else if (number >= 9 && number <= 15) {
-      return BallType.High
-    } else if (number == 8) {
-      return BallType.Eight
-    } else {
-      return BallType.Cue
-    }
+    this.number = config.number
+    this.type = typeFromNumber(config.number)
   }
 
   override onInitialize() {

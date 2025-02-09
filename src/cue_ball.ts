@@ -3,8 +3,8 @@ import { Ball } from "./ball";
 
 
 export class CueBall extends Ball {
-  constructor(pos?: Vector) {
-    super(0, pos);
+  constructor(config: { pos?: Vector }) {
+    super({ pos: config.pos });
   }
 
   override onInitialize() {

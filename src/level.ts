@@ -1,6 +1,7 @@
 import { DefaultLoader, Engine, ExcaliburGraphicsContext, Scene, SceneActivationContext, vec } from "excalibur";
 import { Table } from "./table";
 import { Ball } from "./ball";
+import { CueBall } from "./cue_ball";
 
 export class Game extends Scene {
     override onInitialize(engine: Engine): void {
@@ -8,10 +9,12 @@ export class Game extends Scene {
         const table = new Table();
         this.add(table); // Actors need to be added to a scene to be drawn
 
-        const ball1 = new Ball(1, vec(200, 200));
-        const ball8 = new Ball(8, vec(300, 200));
+        const ball1 = new Ball({ number: 1, pos: vec(200, 200) });
+        const ball8 = new Ball({ number: 8, pos: vec(300, 200) });
+        const cueBall = new CueBall({ pos: vec(830, 400) });
         this.add(ball1)
         this.add(ball8)
+        this.add(cueBall)
     }
 
     override onPreLoad(loader: DefaultLoader): void {
