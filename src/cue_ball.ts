@@ -1,4 +1,4 @@
-import { Collider, CollisionContact, Engine, Side, Vector } from "excalibur";
+import { Collider, CollisionContact, Engine, Keys, Side, vec, Vector } from "excalibur";
 import { Ball } from "./ball";
 
 
@@ -9,11 +9,13 @@ export class CueBall extends Ball {
 
   override onInitialize() {
     super.onInitialize()
-
   }
 
   override onPreUpdate(engine: Engine, elapsedMs: number): void {
     // Put any update logic here runs every frame before Actor builtins
+    if (engine.input.keyboard.wasPressed(Keys.Left)) {
+      this.body.vel = vec(-100, 0)
+    }
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {

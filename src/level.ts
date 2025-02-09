@@ -9,8 +9,8 @@ export class Game extends Scene {
         const table = new Table();
         this.add(table); // Actors need to be added to a scene to be drawn
 
-        const ball1 = new Ball({ number: 1, pos: vec(200, 200) });
-        const ball8 = new Ball({ number: 8, pos: vec(300, 200) });
+        const ball1 = new Ball({ number: 1, pos: vec(200, 400) });
+        const ball8 = new Ball({ number: 8, pos: vec(300, 400) });
         const cueBall = new CueBall({ pos: vec(830, 400) });
         this.add(ball1)
         this.add(ball8)

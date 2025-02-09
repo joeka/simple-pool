@@ -1,4 +1,4 @@
-import { Color, DisplayMode, Engine, FadeInOut } from "excalibur";
+import { Color, DisplayMode, Engine, FadeInOut, SolverStrategy } from "excalibur";
 import { loader } from "./resources";
 import { Game } from "./level";
 
@@ -13,11 +13,11 @@ const game = new Engine({
   scenes: {
     start: Game
   },
-  // physics: {
-  //   solver: SolverStrategy.Realistic,
-  //   substep: 5 // Sub step the physics simulation for more robust simulations
-  // },
-  // fixedUpdateTimestep: 16 // Turn on fixed update timestep when consistent physic simulation is important
+  physics: {
+    solver: SolverStrategy.Realistic,
+    // substep: 5 // Sub step the physics simulation for more robust simulations
+  },
+  fixedUpdateFps: 60 // Turn on fixed update timestep when consistent physic simulation is important
 });
 
 game.start('start', { // name of the start scene 'start'
@@ -25,7 +25,7 @@ game.start('start', { // name of the start scene 'start'
   inTransition: new FadeInOut({ // Optional in transition
     duration: 1000,
     direction: 'in',
-    color: Color.ExcaliburBlue
+    color: Color.Green
   })
 }).then(() => {
   // Do something after the game starts

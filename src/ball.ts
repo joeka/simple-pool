@@ -1,4 +1,4 @@
-import { Actor, Collider, CollisionContact, Engine, Side, vec, Vector } from "excalibur";
+import { Actor, Collider, CollisionContact, CollisionType, Engine, Shape, Side, vec, Vector } from "excalibur";
 import { Resources } from "./resources";
 
 // Actors are the main unit of composition you'll likely use, anything that you want to draw and move around the screen
@@ -59,11 +59,14 @@ export class Ball extends Actor {
       name: nameFromNumber(config.number),
       width: 71,
       height: 71,
-      anchor: vec(0, 0),
-      pos: config.pos
+      pos: config.pos,
     });
     this.number = config.number
     this.type = typeFromNumber(config.number)
+    this.body.collisionType = CollisionType.Active
+    this.body.bounciness = 0.8
+    this.body.mass = 1
+    this.collider.set(Shape.Circle(18))
   }
 
   override onInitialize() {
