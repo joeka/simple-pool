@@ -28,7 +28,7 @@ export class Player extends Actor {
       // anchor: vec(0, 0), // Actors default center colliders and graphics with anchor (0.5, 0.5)
       // collisionType: CollisionType.Active, // Collision Type Active means this participates in collisions read more https://excaliburjs.com/docs/collisiontypes
     });
-    
+
   }
 
   override onInitialize() {
@@ -39,15 +39,15 @@ export class Player extends Actor {
     // 2. You need excalibur to be initialized & started 
     // 3. Deferring logic to run time instead of constructor time
     // 4. Lazy instantiation
-    this.graphics.add(Resources.Sword.toSprite());
+    this.graphics.add(Resources.CueBall.toSprite());
 
     // Actions are useful for scripting common behavior, for example patrolling enemies
     this.actions.delay(2000);
     this.actions.repeatForever(ctx => {
-      ctx.moveBy({offset: vec(100, 0), duration: 1000});
-      ctx.moveBy({offset: vec(0, 100), duration: 1000});
-      ctx.moveBy({offset: vec(-100, 0), duration: 1000});
-      ctx.moveBy({offset: vec(0, -100), duration: 1000});
+      ctx.moveBy({ offset: vec(100, 0), duration: 1000 });
+      ctx.moveBy({ offset: vec(0, 100), duration: 1000 });
+      ctx.moveBy({ offset: vec(-100, 0), duration: 1000 });
+      ctx.moveBy({ offset: vec(0, -100), duration: 1000 });
     });
 
     // Sometimes you want to click on an actor!
