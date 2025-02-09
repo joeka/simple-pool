@@ -1,16 +1,17 @@
 import { Color, DisplayMode, Engine, FadeInOut } from "excalibur";
 import { loader } from "./resources";
-import { MyLevel } from "./level";
+import { Game } from "./level";
 
 // Goal is to keep main.ts small and just enough to configure the engine
 
 const game = new Engine({
-  width: 800, // Logical width and height in game pixels
-  height: 600,
+  width: 1400, // Logical width and height in game pixels
+  height: 800,
   displayMode: DisplayMode.FitScreenAndFill, // Display mode tells excalibur how to fill the window
   pixelArt: true, // pixelArt will turn on the correct settings to render pixel art without jaggies or shimmering artifacts
+  suppressHiDPIScaling: true,
   scenes: {
-    start: MyLevel
+    start: Game
   },
   // physics: {
   //   solver: SolverStrategy.Realistic,
