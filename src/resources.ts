@@ -1,4 +1,4 @@
-import { ImageSource, Loader } from "excalibur";
+import { Color, ImageSource, Loader } from "excalibur";
 
 // It is convenient to put your resources in one place
 export const Resources = {
@@ -28,6 +28,9 @@ export const Resources = {
 // We build a loader and add all of our resources to the boot loader
 // You can build your own loader by extending DefaultLoader
 export const loader = new Loader();
+loader.backgroundColor = Color.ExcaliburBlue.toString();
+loader.logo = new ImageSource("./images/simplelogo.png").path
+loader.logoHeight = 270
 for (const res of Object.values(Resources)) {
   loader.addResource(res);
 }
