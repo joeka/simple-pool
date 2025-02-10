@@ -1,4 +1,4 @@
-import { Actor, Collider, CollisionContact, Engine, Side, vec } from "excalibur";
+import { Actor, Collider, CollisionContact, CollisionType, CompositeCollider, Engine, Shape, Side, vec } from "excalibur";
 import { Resources } from "./resources";
 
 // Actors are the main unit of composition you'll likely use, anything that you want to draw and move around the screen
@@ -13,6 +13,16 @@ import { Resources } from "./resources";
 // actor.actions
 // actor.pointer
 
+const build_table_collider = (width: number, height: number): Collider[] => {
+  const halfWidth = width / 2
+  const halfHeight = height / 2
+  return [
+    Shape.Edge(vec(-halfWidth, -halfHeight), vec(-halfWidth, halfHeight)),
+    Shape.Edge(vec(-halfWidth, halfHeight), vec(halfWidth, halfHeight)),
+    Shape.Edge(vec(halfWidth, halfHeight), vec(halfWidth, -halfHeight)),
+    Shape.Edge(vec(halfWidth, -halfHeight), vec(-halfWidth, -halfHeight))
+  ]
+}
 
 export class Table extends Actor {
   constructor() {
@@ -22,10 +32,7 @@ export class Table extends Actor {
       // Chrome: https://chromewebstore.google.com/detail/excalibur-dev-tools/dinddaeielhddflijbbcmpefamfffekc
       // Firefox: https://addons.mozilla.org/en-US/firefox/addon/excalibur-dev-tools/
       name: 'Table',
-      pos: vec(5, 100),
-      width: 1138,
-      height: 643,
-      anchor: vec(0, 0),
+      collisionType: CollisionType.Fixed
       // anchor: vec(0, 0), // Actors default center colliders and graphics with anchor (0.5, 0.5)
       // collisionType: CollisionType.Active, // Collision Type Active means this participates in collisions read more https://excaliburjs.com/docs/collisiontypes
     });
@@ -40,7 +47,9 @@ export class Table extends Actor {
     // 2. You need excalibur to be initialized & started 
     // 3. Deferring logic to run time instead of constructor time
     // 4. Lazy instantiation
-    this.graphics.add(Resources.Table.toSprite());
+    const tableSprite = Resources.Table.toSprite();
+    this.graphics.add(tableSprite);
+    this.collider.useCompositeCollider(build_table_collider(tableSprite.width, tableSprite.height));
     //this.graphics.add(Resources.Dots.toSprite());
   }
 

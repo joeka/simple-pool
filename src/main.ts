@@ -7,7 +7,7 @@ import { Game } from "./level";
 const game = new Engine({
   width: 1400, // Logical width and height in game pixels
   height: 800,
-  displayMode: DisplayMode.FitScreenAndFill, // Display mode tells excalibur how to fill the window
+  displayMode: DisplayMode.FitScreen, // Display mode tells excalibur how to fill the window
   pixelArt: true, // pixelArt will turn on the correct settings to render pixel art without jaggies or shimmering artifacts
   suppressHiDPIScaling: true,
   scenes: {
@@ -25,7 +25,7 @@ game.start('start', { // name of the start scene 'start'
   inTransition: new FadeInOut({ // Optional in transition
     duration: 1000,
     direction: 'in',
-    color: Color.Green
+    color: Color.ExcaliburBlue
   })
 }).then(() => {
   // Do something after the game starts

@@ -1,5 +1,6 @@
 import { Actor, Collider, CollisionContact, CollisionType, Engine, Shape, Side, vec, Vector } from "excalibur";
 import { Resources } from "./resources";
+import { ShootingComponent } from "./components/shooting";
 
 // Actors are the main unit of composition you'll likely use, anything that you want to draw and move around the screen
 // is likely built with an actor
@@ -52,21 +53,21 @@ export type BallArgs = {
 export class Ball extends Actor {
   number?: number
   type: BallType
+  friction: number;
 
 
   constructor(config: BallArgs) {
     super({
       name: nameFromNumber(config.number),
-      width: 71,
-      height: 71,
       pos: config.pos,
+      radius: 18
     });
     this.number = config.number
     this.type = typeFromNumber(config.number)
     this.body.collisionType = CollisionType.Active
     this.body.bounciness = 0.8
     this.body.mass = 1
-    this.collider.set(Shape.Circle(18))
+    this.friction = 0.99
   }
 
   override onInitialize() {
@@ -79,6 +80,7 @@ export class Ball extends Actor {
     // 4. Lazy instantiation
     if (this.type == BallType.Cue) {
       this.graphics.add(Resources.CueBall.toSprite());
+      this.addComponent(new ShootingComponent())
     } else {
       let resourceKey = "Ball" + this.number as keyof typeof Resources
       this.graphics.add(Resources[resourceKey].toSprite());
@@ -86,7 +88,14 @@ export class Ball extends Actor {
   }
 
   override onPreUpdate(engine: Engine, elapsedMs: number): void {
-    // Put any update logic here runs every frame before Actor builtins
+    this.vel = this.vel.scale(this.friction);
+    this.angularVelocity = this.angularVelocity * this.friction;
+
+    // stop when ball is very slow
+    if (this.vel.magnitude < 0.1) {
+      this.vel = vec(0, 0);
+      this.angularVelocity = 0;
+    }
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
