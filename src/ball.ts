@@ -1,4 +1,4 @@
-import { Actor, Collider, CollisionContact, CollisionType, Engine, Shape, Side, vec, Vector } from "excalibur";
+import { Actor, Collider, CollisionContact, CollisionType, Engine, Side, vec, Vector } from "excalibur";
 import { Resources } from "./resources";
 import { ShootingComponent } from "./components/shooting";
 
@@ -51,6 +51,7 @@ export type BallArgs = {
 }
 
 export class Ball extends Actor {
+  readonly radius: number = 18;
   number?: number
   type: BallType
   friction: number;
@@ -60,10 +61,10 @@ export class Ball extends Actor {
     super({
       name: nameFromNumber(config.number),
       pos: config.pos,
-      radius: 18
     });
     this.number = config.number
-    this.type = typeFromNumber(config.number)
+    this.type = typeFromNumber(config.number);
+    this.collider.useCircleCollider(this.radius);
     this.body.collisionType = CollisionType.Active
     this.body.bounciness = 0.8
     this.body.mass = 1
@@ -80,7 +81,7 @@ export class Ball extends Actor {
     // 4. Lazy instantiation
     if (this.type == BallType.Cue) {
       this.graphics.add(Resources.CueBall.toSprite());
-      this.addComponent(new ShootingComponent())
+      this.addComponent(new ShootingComponent());
     } else {
       let resourceKey = "Ball" + this.number as keyof typeof Resources
       this.graphics.add(Resources[resourceKey].toSprite());
@@ -96,6 +97,10 @@ export class Ball extends Actor {
       this.vel = vec(0, 0);
       this.angularVelocity = 0;
     }
+  }
+
+  isStill(): boolean {
+    return this.vel.magnitude < 0.1
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {

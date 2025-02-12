@@ -1,4 +1,4 @@
-import { Actor, Collider, CollisionContact, CollisionType, CompositeCollider, Engine, Shape, Side, vec } from "excalibur";
+import { Actor, Collider, CollisionContact, CollisionType, Engine, Shape, Side, vec } from "excalibur";
 import { Resources } from "./resources";
 
 // Actors are the main unit of composition you'll likely use, anything that you want to draw and move around the screen
