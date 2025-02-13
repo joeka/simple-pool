@@ -89,8 +89,13 @@ export class Ball extends Actor {
   }
 
   override onPreUpdate(engine: Engine, elapsedMs: number): void {
-    this.vel = this.vel.scale(this.friction);
-    this.angularVelocity = this.angularVelocity * this.friction;
+    const speed = this.vel.magnitude;
+    if (speed === 0)
+      return;
+
+    const velScale = (speed - 2) / speed;
+    this.vel = this.vel.scale(velScale);
+    this.angularVelocity = this.angularVelocity * velScale;
 
     // stop when ball is very slow
     if (this.vel.magnitude < 0.1) {

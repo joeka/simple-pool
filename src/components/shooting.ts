@@ -22,20 +22,29 @@ export class ShootingComponent extends Component {
   onAdd(owner: Ball): void {
     this.ballRadius = owner.radius;
     const engine = owner.scene?.engine;
-    if (engine) {
-      engine.input.pointers.primary.on("down", this.onDragStart.bind(this));
-      engine.input.pointers.primary.on("move", this.onPointerMove.bind(this));
-      engine.input.pointers.primary.on("up", this.onDragEnd.bind(this));
-      engine.currentScene.add(this.cue);
-    } 
+    if (!engine) return;
+
+    engine.input.pointers.primary.on("down", this.onDragStart);
+    engine.input.pointers.primary.on("move", this.onPointerMove);
+    engine.input.pointers.primary.on("up", this.onDragEnd);
+    engine.currentScene.add(this.cue);
   }
 
-  onDragStart(event: PointerEvent) {
+  onRemove(): void {
+    const engine = this.owner.scene?.engine;
+    if (!engine) return;
+
+    engine.input.pointers.primary.off("down", this.onDragStart);
+    engine.input.pointers.primary.off("move", this.onPointerMove);
+    engine.input.pointers.primary.off("up", this.onDragEnd);
+  }
+
+  private onDragStart = (event: PointerEvent): void => {
     this.isDragged = true;
     this.dragStart = event.coordinates.worldPos;
   }
 
-  onPointerMove(event: PointerEvent) {
+  private onPointerMove = (event: PointerEvent): void => {
     if (!this.isDragged && !this.owner.isStill())
       return;
     const dragPos = event.coordinates.worldPos;
@@ -46,7 +55,7 @@ export class ShootingComponent extends Component {
     this.cue.rotation = dragDirection.toAngle();
   }
 
-  onDragEnd(event: PointerEvent) {
+  private onDragEnd = (event: PointerEvent): void => {
     if (!this.isDragged)
       return;
     this.dragEnd = event.coordinates.worldPos;
@@ -54,13 +63,14 @@ export class ShootingComponent extends Component {
     this.isDragged = false;
     this.cue.actions.moveTo({
       pos: this.owner.pos.sub(dragDirection.scale(this.ballRadius)),
-      duration: 20
-    }).callMethod(() => this.applyVelocity());
+      duration: 20 // duration of the shot, from letting cue go to hitting the ball
+    }).callMethod(this.applyVelocity);
   }
 
-  applyVelocity() {
-    const direction = this.dragStart.sub(this.dragEnd);
-    const velocity = direction.scale(10);
+  private applyVelocity = (): void => {
+    const direction = this.owner.pos.sub(this.dragEnd).normalize();
+    const strength = this.dragStart.sub(this.dragEnd).magnitude
+    const velocity = direction.scale(strength * 10); // arbitrary multiplier for shooting strength
     this.owner.vel = velocity;
   }
 }
