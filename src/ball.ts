@@ -51,7 +51,7 @@ export type BallArgs = {
 }
 
 export class Ball extends Actor {
-  readonly radius: number = 18;
+  public static radius: number = 18;
   number?: number
   type: BallType
   friction: number;
@@ -64,7 +64,7 @@ export class Ball extends Actor {
     });
     this.number = config.number
     this.type = typeFromNumber(config.number);
-    this.collider.useCircleCollider(this.radius);
+    this.collider.useCircleCollider(Ball.radius);
     this.body.collisionType = CollisionType.Active
     this.body.bounciness = 0.8
     this.body.mass = 1

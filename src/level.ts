@@ -1,20 +1,19 @@
 import { DefaultLoader, Engine, ExcaliburGraphicsContext, Scene, SceneActivationContext, vec } from "excalibur";
 import { Table } from "./table";
 import { Ball } from "./ball";
+import { BallSpawner } from "./ball-spawner";
 
 export class Game extends Scene {
     override onInitialize(engine: Engine): void {
         // Scene.onInitialize is where we recommend you perform the composition for your game
         const table = new Table();
-        table.pos = vec(engine.halfCanvasWidth, engine.halfCanvasHeight)
+        table.pos = vec(engine.halfCanvasWidth, engine.halfCanvasHeight);
         this.add(table); // Actors need to be added to a scene to be drawn
 
-        const ball1 = new Ball({ number: 1, pos: vec(300, 400) });
-        const ball8 = new Ball({ number: 8, pos: vec(400, 400) });
+        const ballSpawner = new BallSpawner();
+        ballSpawner.placeBalls(engine, vec(500, 400), Ball.radius);
         const cueBall = new Ball({ pos: vec(975, 400) });
-        this.add(ball1)
-        this.add(ball8)
-        this.add(cueBall)
+        this.add(cueBall);
     }
 
     override onPreLoad(loader: DefaultLoader): void {

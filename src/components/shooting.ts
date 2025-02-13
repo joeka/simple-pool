@@ -9,7 +9,7 @@ export class ShootingComponent extends Component {
   private isDragged: boolean;
   private dragStart: Vector;
   private dragEnd: Vector;
-  private ballRadius: number = 18;
+  private ballRadius: number = Ball.radius;
 
   constructor() {
     super();
@@ -20,7 +20,6 @@ export class ShootingComponent extends Component {
   }
 
   onAdd(owner: Ball): void {
-    this.ballRadius = owner.radius;
     const engine = owner.scene?.engine;
     if (!engine) return;
 
