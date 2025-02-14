@@ -2,17 +2,7 @@ import { Actor, Collider, CollisionContact, CollisionType, Engine, Side, vec, Ve
 import { Resources } from "./resources";
 import { ShootingComponent } from "./components/shooting";
 
-// Actors are the main unit of composition you'll likely use, anything that you want to draw and move around the screen
-// is likely built with an actor
-
-// They contain a bunch of useful components that you might use
-// actor.transform
-// actor.motion
-// actor.graphics
-// actor.body
-// actor.collider
-// actor.actions
-// actor.pointer
+const VELOCITY_THRESHOLD = 1
 
 enum BallType {
   Cue,
@@ -54,7 +44,7 @@ export class Ball extends Actor {
   public static radius: number = 18;
   number?: number
   type: BallType
-  friction: number;
+  friction_vel_loss: number;
 
 
   constructor(config: BallArgs) {
@@ -68,17 +58,10 @@ export class Ball extends Actor {
     this.body.collisionType = CollisionType.Active
     this.body.bounciness = 0.8
     this.body.mass = 1
-    this.friction = 0.99
+    this.friction_vel_loss = 2
   }
 
   override onInitialize() {
-    // Generally recommended to stick logic in the "On initialize"
-    // This runs before the first update
-    // Useful when
-    // 1. You need things to be loaded like Images for graphics
-    // 2. You need excalibur to be initialized & started 
-    // 3. Deferring logic to run time instead of constructor time
-    // 4. Lazy instantiation
     if (this.type == BallType.Cue) {
       this.graphics.add(Resources.CueBall.toSprite());
       this.addComponent(new ShootingComponent());
@@ -93,19 +76,19 @@ export class Ball extends Actor {
     if (speed === 0)
       return;
 
-    const velScale = (speed - 2) / speed;
+    const velScale = (speed - this.friction_vel_loss) / speed;
     this.vel = this.vel.scale(velScale);
     this.angularVelocity = this.angularVelocity * velScale;
 
     // stop when ball is very slow
-    if (this.vel.magnitude < 0.1) {
+    if (this.vel.magnitude < VELOCITY_THRESHOLD) {
       this.vel = vec(0, 0);
       this.angularVelocity = 0;
     }
   }
 
   isStill(): boolean {
-    return this.vel.magnitude < 0.1
+    return this.vel.magnitude < VELOCITY_THRESHOLD;
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {

@@ -1,5 +1,6 @@
-import { Actor, Collider, CollisionContact, CollisionType, Engine, Shape, Side, vec } from "excalibur";
+import { Actor, Collider, CollisionContact, CollisionType, Engine, GraphicsGroup, Shape, Side, vec, Vector } from "excalibur";
 import { Resources } from "./resources";
+import { ColliderPaintingComponent } from "./utils/colliders-painting";
 
 // Actors are the main unit of composition you'll likely use, anything that you want to draw and move around the screen
 // is likely built with an actor
@@ -21,6 +22,17 @@ const build_table_collider = (width: number, height: number): Collider[] => {
     Shape.Edge(vec(-halfWidth, halfHeight), vec(halfWidth, halfHeight)),
     Shape.Edge(vec(halfWidth, halfHeight), vec(halfWidth, -halfHeight)),
     Shape.Edge(vec(halfWidth, -halfHeight), vec(-halfWidth, -halfHeight))
+  ]
+}
+
+const build_cushion_collider = (): Collider[] => {
+  return [
+    Shape.Polygon([vec(-494, -209), vec(-495, 210), vec(-516, 231), vec(-569, 233), vec(-569, -229), vec(-516, -229)]),
+    Shape.Polygon([vec(-484, -267), vec(-465, -249), vec(-44, -248), vec(-34, -267), vec(-33, -321), vec(-487, -320)]),
+    Shape.Polygon([vec(21, -268), vec(30, -248), vec(457, -248), vec(478, -269), vec(478, -320), vec(23, -321)]),
+    Shape.Polygon([vec(519, -230), vec(497, -210), vec(497, 209), vec(518, 232), vec(568, 231), vec(568, -229)]),
+    Shape.Polygon([vec(456, 249), vec(478, 268), vec(478, 321), vec(23, 321), vec(22, 268), vec(30, 249)]),
+    Shape.Polygon([vec(-42, 249), vec(-34, 267), vec(-34, 322), vec(-487, 319), vec(-483, 269), vec(-464, 249)]),
   ]
 }
 
@@ -48,9 +60,19 @@ export class Table extends Actor {
     // 3. Deferring logic to run time instead of constructor time
     // 4. Lazy instantiation
     const tableSprite = Resources.Table.toSprite();
-    this.graphics.add(tableSprite);
-    this.collider.useCompositeCollider(build_table_collider(tableSprite.width, tableSprite.height));
+    this.graphics.add(new GraphicsGroup({
+      members: [
+        { graphic: tableSprite, offset: Vector.Zero },
+        { graphic: Resources.Dots.toSprite(), offset: vec(21, 20) }
+      ]
+    }))
     //this.graphics.add(Resources.Dots.toSprite());
+    const tableCollider = [
+      ...build_table_collider(tableSprite.width, tableSprite.height),
+      ...build_cushion_collider()
+    ]
+    this.collider.useCompositeCollider(tableCollider);
+    this.addComponent(new ColliderPaintingComponent());
   }
 
   override onPreUpdate(engine: Engine, elapsedMs: number): void {
