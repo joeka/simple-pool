@@ -1,8 +1,8 @@
 # Simple pool game
 
 Using
-    * https://excaliburjs.com
-    * https://opengameart.org/content/8-ball-pool-assets
+* https://excaliburjs.com
+* https://opengameart.org/content/8-ball-pool-assets
 
 
 ## Getting Started
