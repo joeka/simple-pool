@@ -1,4 +1,4 @@
-import { Actor, Collider, CollisionContact, CollisionType, Engine, Side, vec, Vector } from "excalibur";
+import { Actor, Collider, CollisionContact, CollisionType, Side, Vector } from "excalibur";
 import { Ball } from "./ball";
 
 
