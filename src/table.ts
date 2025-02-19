@@ -1,6 +1,7 @@
 import { Actor, Collider, CollisionContact, CollisionType, Engine, GraphicsGroup, Shape, Side, vec, Vector } from "excalibur";
 import { Resources } from "./resources";
 import { ColliderPaintingComponent } from "./utils/colliders-painting";
+import { Hole } from "./hole";
 
 // Actors are the main unit of composition you'll likely use, anything that you want to draw and move around the screen
 // is likely built with an actor
@@ -66,13 +67,18 @@ export class Table extends Actor {
         { graphic: Resources.Dots.toSprite(), offset: vec(21, 20) }
       ]
     }))
-    //this.graphics.add(Resources.Dots.toSprite());
     const tableCollider = [
       ...build_table_collider(tableSprite.width, tableSprite.height),
       ...build_cushion_collider()
     ]
     this.collider.useCompositeCollider(tableCollider);
     this.addComponent(new ColliderPaintingComponent());
+
+    const holePositions = [vec(-516, -262), vec(-6, -275), vec(508, -262), vec(-516, 262), vec(-6, 275), vec(508, 262)];
+    holePositions.forEach((pos) => {
+      const hole = new Hole({ pos, radius: 30 });
+      this.addChild(hole);
+    });
   }
 
   override onPreUpdate(engine: Engine, elapsedMs: number): void {

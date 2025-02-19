@@ -1,6 +1,7 @@
 import { Actor, Collider, CollisionContact, CollisionType, Engine, Side, vec, Vector } from "excalibur";
 import { Resources } from "./resources";
 import { ShootingComponent } from "./components/shooting";
+import { Hole } from "./hole";
 
 const VELOCITY_THRESHOLD = 1
 
@@ -52,13 +53,14 @@ export class Ball extends Actor {
       name: nameFromNumber(config.number),
       pos: config.pos,
     });
+    this.addTag("Ball");
     this.number = config.number
     this.type = typeFromNumber(config.number);
     this.collider.useCircleCollider(Ball.radius);
-    this.body.collisionType = CollisionType.Active
-    this.body.bounciness = 0.8
-    this.body.mass = 1
-    this.friction_vel_loss = 2
+    this.body.collisionType = CollisionType.Active;
+    this.body.bounciness = 0.8;
+    this.body.mass = 1;
+    this.friction_vel_loss = 2;
   }
 
   override onInitialize() {
@@ -89,6 +91,21 @@ export class Ball extends Actor {
 
   isStill(): boolean {
     return this.vel.magnitude < VELOCITY_THRESHOLD;
+  }
+
+  holeIn(hole: Hole) {
+    const holePos = hole.globalPos;
+    const offset = holePos.sub(this.pos);
+    const velocity = !!this.vel.magnitude ? this.vel.magnitude : 1;
+    this.actions
+      .moveBy(offset, velocity)
+      .scaleTo({
+        scale: Vector.Zero,
+        duration: 100
+      })
+      .callMethod(
+        () => this.kill()
+      );
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
