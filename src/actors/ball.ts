@@ -1,6 +1,6 @@
 import { Actor, Collider, CollisionContact, CollisionType, Engine, Side, vec, Vector } from "excalibur";
-import { Resources } from "./resources";
-import { ShootingComponent } from "./components/shooting";
+import { Resources } from "../resources";
+import { ShootingComponent } from "../components/shooting";
 import { Hole } from "./hole";
 
 const VELOCITY_THRESHOLD = 1

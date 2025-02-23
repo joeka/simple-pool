@@ -1,6 +1,6 @@
 import { DefaultLoader, Engine, ExcaliburGraphicsContext, Scene, SceneActivationContext, vec } from "excalibur";
-import { Table } from "./table";
-import { Ball } from "./ball";
+import { Table } from "./actors/table";
+import { Ball } from "./actors/ball";
 import { BallSpawner } from "./ball-spawner";
 
 export class Game extends Scene {

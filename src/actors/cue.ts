@@ -1,5 +1,5 @@
 import { Actor, Collider, CollisionContact, Engine, Side, vec } from "excalibur";
-import { Resources } from "./resources";
+import { Resources } from "../resources";
 
 
 export class Cue extends Actor {

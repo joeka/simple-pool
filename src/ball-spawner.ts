@@ -1,5 +1,5 @@
 import { Engine, randomIntInRange, vec, Vector } from "excalibur";
-import { Ball } from "./ball";
+import { Ball } from "./actors/ball";
 
 // Fisher-Yates shuffle
 const shuffleArray = (array: unknown[]) => {

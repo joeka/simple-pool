@@ -1,6 +1,6 @@
 import { Component, PointerEvent, Vector } from 'excalibur'
-import { Cue } from '../cue';
-import { Ball } from '../ball';
+import { Cue } from '../actors/cue';
+import { Ball } from '../actors/ball';
 
 export class ShootingComponent extends Component {
   declare owner: Ball;
