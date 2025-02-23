@@ -1,11 +1,14 @@
-import { Component, PointerEvent, Vector } from 'excalibur'
+import { Component, Engine, PointerEvent, Vector } from 'excalibur'
 import { Cue } from '../actors/cue';
 import { Ball } from '../actors/ball';
 
 export class ShootingComponent extends Component {
   declare owner: Ball;
 
+  private engine: Engine | undefined;
+
   private cue: Cue;
+  private isActive: boolean;
   private isCharging: boolean;
   private cueDirection: Vector;
   private clickPosition: Vector;
@@ -15,31 +18,40 @@ export class ShootingComponent extends Component {
   constructor() {
     super();
     this.cue = new Cue();
+    this.isActive = false;
     this.isCharging = false;
     this.cueDirection = Vector.Zero;
     this.clickPosition = Vector.Zero;
     this.chargingStrength = 0;
   }
 
-  onAdd(owner: Ball): void {
-    const engine = owner.scene?.engine;
-    if (!engine) return;
+  public setActive(active: boolean){
+    if (active !== this.isActive) {
+      // fade cue in/out when active state changes
+      this.cue.actions.fade(Number(active), 200);
+    }
+    this.isActive = active;
+  }
 
-    engine.input.pointers.primary.on("down", this.onPointerDown);
-    engine.input.pointers.primary.on("move", this.onPointerMove);
-    engine.currentScene.add(this.cue);
+  onAdd(owner: Ball): void {
+    this.engine = owner.scene?.engine;
+    if (!this.engine) return;
+
+    this.engine.input.pointers.primary.on("down", this.onPointerDown);
+    this.engine.input.pointers.primary.on("move", this.onPointerMove);
+    this.engine.currentScene.add(this.cue);
   }
 
   onRemove(): void {
-    const engine = this.owner.scene?.engine;
-    if (!engine) return;
+    this.cue.kill();
+    if (!this.engine) return;
 
-    engine.input.pointers.primary.off("down", this.onPointerDown);
-    engine.input.pointers.primary.off("move", this.onPointerMove);
+    this.engine.input.pointers.primary.off("down", this.onPointerDown);
+    this.engine.input.pointers.primary.off("move", this.onPointerMove);
   }
 
   private onPointerDown = (event: PointerEvent): void => {
-    if (!this.owner.isStill())
+    if (!this.isActive)
       return;
 
     if (this.isCharging) {
@@ -52,7 +64,7 @@ export class ShootingComponent extends Component {
   }
 
   private onPointerMove = (event: PointerEvent): void => {
-    if (!this.owner.isStill())
+    if (!this.isActive)
       return;
     
     if (this.isCharging) {

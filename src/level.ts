@@ -2,6 +2,7 @@ import { DefaultLoader, Engine, ExcaliburGraphicsContext, Scene, SceneActivation
 import { Table } from "./actors/table";
 import { Ball } from "./actors/ball";
 import { BallSpawner } from "./ball-spawner";
+import { GameLogicSystem } from "./systems/game-logic";
 
 export class Game extends Scene {
     override onInitialize(engine: Engine): void {
@@ -14,6 +15,8 @@ export class Game extends Scene {
         ballSpawner.placeBalls(engine, vec(500, 400), Ball.radius);
         const cueBall = new Ball({ pos: vec(975, 400) });
         this.add(cueBall);
+
+        this.world.add(GameLogicSystem);
     }
 
     override onPreLoad(loader: DefaultLoader): void {

@@ -1,11 +1,11 @@
-import { Actor, Collider, CollisionContact, CollisionType, Engine, Side, vec, Vector } from "excalibur";
+import { Actor, Collider, CollisionContact, CollisionType, Engine, Scene, Side, vec, Vector } from "excalibur";
 import { Resources } from "../resources";
 import { ShootingComponent } from "../components/shooting";
 import { Hole } from "./hole";
 
 const VELOCITY_THRESHOLD = 1
 
-enum BallType {
+export enum BallType {
   Cue,
   Low,
   High,
@@ -46,6 +46,7 @@ export class Ball extends Actor {
   number?: number
   type: BallType
   friction_vel_loss: number;
+  holed: boolean;
 
 
   constructor(config: BallArgs) {
@@ -53,14 +54,16 @@ export class Ball extends Actor {
       name: nameFromNumber(config.number),
       pos: config.pos,
     });
-    this.addTag("Ball");
     this.number = config.number
     this.type = typeFromNumber(config.number);
+    this.friction_vel_loss = 2;
+    this.holed = false;
+    
+    this.addTag("Ball");
     this.collider.useCircleCollider(Ball.radius);
     this.body.collisionType = CollisionType.Active;
     this.body.bounciness = 0.8;
     this.body.mass = 1;
-    this.friction_vel_loss = 2;
   }
 
   override onInitialize() {
@@ -94,6 +97,7 @@ export class Ball extends Actor {
   }
 
   holeIn(hole: Hole) {
+    this.holed = true;
     const holePos = hole.globalPos;
     const offset = holePos.sub(this.pos);
     const velocity = !!this.vel.magnitude ? this.vel.magnitude : 1;
@@ -104,8 +108,15 @@ export class Ball extends Actor {
         duration: 100
       })
       .callMethod(
-        () => this.kill()
+        () => this.removeBall()
       );
+  }
+
+  removeBall() {
+    if (this.type == BallType.Cue) {
+      this.removeComponent(ShootingComponent);
+    }
+    this.kill();
   }
 
   override onPostUpdate(engine: Engine, elapsedMs: number): void {
