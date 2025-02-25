@@ -3,6 +3,7 @@ import { Table } from "./actors/table";
 import { Ball } from "./actors/ball";
 import { BallSpawner } from "./ball-spawner";
 import { GameLogicSystem } from "./systems/game-logic";
+import { NetworkingSystem } from "./systems/networking";
 
 export class Game extends Scene {
     override onInitialize(engine: Engine): void {
@@ -17,6 +18,7 @@ export class Game extends Scene {
         this.add(cueBall);
 
         this.world.add(GameLogicSystem);
+        this.world.add(NetworkingSystem);
     }
 
     override onPreLoad(loader: DefaultLoader): void {
