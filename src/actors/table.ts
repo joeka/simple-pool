@@ -1,4 +1,4 @@
-import { Actor, Collider, CollisionContact, CollisionType, Engine, GraphicsGroup, Shape, Side, vec, Vector } from "excalibur";
+import { Actor, Collider, CollisionContact, CollisionType, Engine, Shape, Side, vec } from "excalibur";
 import { Resources } from "../resources";
 import { ColliderPaintingComponent } from "../utils/colliders-painting";
 import { Hole } from "./hole";
@@ -61,16 +61,11 @@ export class Table extends Actor {
     // 3. Deferring logic to run time instead of constructor time
     // 4. Lazy instantiation
     const tableSprite = Resources.Table.toSprite();
-    this.graphics.add(new GraphicsGroup({
-      members: [
-        { graphic: tableSprite, offset: Vector.Zero },
-        { graphic: Resources.Dots.toSprite(), offset: vec(21, 20) }
-      ]
-    }))
+    this.graphics.add(tableSprite);
     const tableCollider = [
       ...build_table_collider(tableSprite.width, tableSprite.height),
       ...build_cushion_collider()
-    ]
+    ];
     this.collider.useCompositeCollider(tableCollider);
     this.addComponent(new ColliderPaintingComponent());
 

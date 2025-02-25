@@ -1,4 +1,4 @@
-import { Actor, Collider, CollisionContact, CollisionType, Engine, Scene, Side, vec, Vector } from "excalibur";
+import { Actor, Collider, CollisionContact, CollisionType, Engine, Side, vec, Vector } from "excalibur";
 import { Resources } from "../resources";
 import { ShootingComponent } from "../components/shooting";
 import { Hole } from "./hole";
@@ -42,7 +42,7 @@ export type BallArgs = {
 }
 
 export class Ball extends Actor {
-  public static radius: number = 18;
+  public static radius: number = 16;
   number?: number
   type: BallType
   friction_vel_loss: number;
@@ -58,7 +58,7 @@ export class Ball extends Actor {
     this.type = typeFromNumber(config.number);
     this.friction_vel_loss = 2;
     this.holed = false;
-    
+
     this.addTag("Ball");
     this.collider.useCircleCollider(Ball.radius);
     this.body.collisionType = CollisionType.Active;
