@@ -25,12 +25,12 @@ export class ShootingComponent extends Component {
     this.chargingStrength = 0;
   }
 
-  public setActive(active: boolean){
+  public setActive(active: boolean) {
     if (active !== this.isActive) {
       // fade cue in/out when active state changes
       this.cue.actions.fade(Number(active), 200);
+      this.isActive = active;
     }
-    this.isActive = active;
   }
 
   onAdd(owner: Ball): void {
@@ -66,7 +66,7 @@ export class ShootingComponent extends Component {
   private onPointerMove = (event: PointerEvent): void => {
     if (!this.isActive)
       return;
-    
+
     if (this.isCharging) {
       this.chargeShot(event.coordinates.worldPos);
       return;
@@ -80,7 +80,7 @@ export class ShootingComponent extends Component {
     this.cue.pos = ballPosition.sub(this.cueDirection.scale(this.ballRadius))
     this.cue.rotation = this.cueDirection.toAngle();
   }
-  
+
   private chargeShot = (pointerPosition: Vector) => {
     const ballPosition = this.owner.pos;
     this.chargingStrength = this.clickPosition.sub(pointerPosition).magnitude;

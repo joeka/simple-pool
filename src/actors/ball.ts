@@ -2,6 +2,7 @@ import { Actor, Collider, CollisionContact, CollisionType, Engine, Side, vec, Ve
 import { Resources } from "../resources";
 import { ShootingComponent } from "../components/shooting";
 import { Hole } from "./hole";
+import { BallInHandComponent } from "../components/ball-in-hand";
 
 const VELOCITY_THRESHOLD = 1
 
@@ -47,7 +48,8 @@ export class Ball extends Actor {
   type: BallType
   friction_vel_loss: number;
   holed: boolean;
-
+  inHand: boolean;
+  collisions: number;
 
   constructor(config: BallArgs) {
     super({
@@ -58,8 +60,12 @@ export class Ball extends Actor {
     this.type = typeFromNumber(config.number);
     this.friction_vel_loss = 2;
     this.holed = false;
+    this.inHand = false;
+
+    this.collisions = 0;
 
     this.addTag("Ball");
+    this.addTag(BallType[this.type]);
     this.collider.useCircleCollider(Ball.radius);
     this.body.collisionType = CollisionType.Active;
     this.body.bounciness = 0.8;
@@ -70,6 +76,7 @@ export class Ball extends Actor {
     if (this.type == BallType.Cue) {
       this.graphics.add(Resources.CueBall.toSprite());
       this.addComponent(new ShootingComponent());
+      this.addComponent(new BallInHandComponent());
     } else {
       let resourceKey = "Ball" + this.number as keyof typeof Resources
       this.graphics.add(Resources[resourceKey].toSprite());
@@ -101,21 +108,52 @@ export class Ball extends Actor {
     const holePos = hole.globalPos;
     const offset = holePos.sub(this.pos);
     const velocity = !!this.vel.magnitude ? this.vel.magnitude : 1;
-    this.actions
-      .moveBy(offset, velocity)
-      .scaleTo({
-        scale: Vector.Zero,
-        duration: 100
-      })
-      .callMethod(
-        () => this.removeBall()
-      );
+
+    if (this.type == BallType.Cue) {
+
+      this.body.collisionType = CollisionType.Passive;
+      this.actions.moveBy(offset, velocity)
+        .scaleTo({
+          scale: Vector.Zero,
+          duration: 100
+        })
+        .moveTo(vec(975, 400), 1000)
+        .scaleTo(
+          Vector.One,
+          vec(4, 4))
+        .callMethod(
+          () => this.setInHand(true)
+        );
+    } else {
+      this.actions
+        .moveBy(offset, velocity)
+        .scaleTo({
+          scale: Vector.Zero,
+          duration: 100
+        })
+        .callMethod(
+          () => this.removeBall()
+        );
+    }
+  }
+
+  setInHand(inHand: boolean) {
+    if (this.type != BallType.Cue)
+      return;
+
+    if (this.inHand != inHand) {
+      this.inHand = inHand;
+
+      if (inHand) {
+        this.body.collisionType = CollisionType.Passive;
+        this.holed = false;
+      } else {
+        this.body.collisionType = CollisionType.Active;
+      }
+    }
   }
 
   removeBall() {
-    if (this.type == BallType.Cue) {
-      this.removeComponent(ShootingComponent);
-    }
     this.kill();
   }
 
@@ -132,10 +170,10 @@ export class Ball extends Actor {
   }
 
   override onCollisionStart(self: Collider, other: Collider, side: Side, contact: CollisionContact): void {
-    // Called when a pair of objects are in contact
+    this.collisions += 1;
   }
 
   override onCollisionEnd(self: Collider, other: Collider, side: Side, lastContact: CollisionContact): void {
-    // Called when a pair of objects separates
+    this.collisions -= 1;
   }
 }

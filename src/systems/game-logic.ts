@@ -1,40 +1,42 @@
-import { System, Query, SystemType, World, BodyComponent } from "excalibur";
+import { System, Query, SystemType, World, TagQuery } from "excalibur";
 import { ShootingComponent } from "../components/shooting";
+import { BallInHandComponent } from "../components/ball-in-hand";
 import { Ball, BallType } from "../actors/ball";
 
 export class GameLogicSystem extends System {
   shootingQuery: Query<typeof ShootingComponent>;
-  bodyQuery: Query<typeof BodyComponent>;
-  systemType: SystemType
-
-  private ballsMoving: boolean = false
-  private cueBallInGame: boolean = false
+  ballInHandQuery: Query<typeof BallInHandComponent>;
+  ballQuery: TagQuery<"Ball">;
+  systemType: SystemType;
 
   constructor(world: World) {
     super();
     this.shootingQuery = world.query([ShootingComponent]);
-    this.bodyQuery = world.query([BodyComponent]);
+    this.ballInHandQuery = world.query([BallInHandComponent]);
+    this.ballQuery = world.queryTags(["Ball"]);
     this.systemType = SystemType.Update;
   }
-  
-  update(delta: number) {
-    this.ballsMoving = false
-    this.cueBallInGame = false
 
-    for (let entity of this.bodyQuery.entities) {
-      const body = entity.get(BodyComponent);
-      if (body.owner?.hasTag("Ball")) {
-        const ball = body.owner as Ball;
-        const thatBallMoving = !ball.isStill();
-        
-        this.ballsMoving = this.ballsMoving || thatBallMoving;
-        this.cueBallInGame = this.cueBallInGame || (ball.type === BallType.Cue && !ball.holed)
+  update(_delta: number) {
+    let ballsMoving = false;
+    let cueBallInGame = false;
+    let ballInHand = false;
+
+    for (let ball of this.ballQuery.entities as Ball[]) {
+      const thatBallMoving = !ball.isStill();
+
+      ballsMoving = ballsMoving || thatBallMoving;
+
+      if (ball.type === BallType.Cue) {
+        ballInHand = ball.inHand;
+        cueBallInGame = cueBallInGame || (!ball.holed && !ballInHand);
       }
+
     }
 
-    for (let entity of this.shootingQuery.entities) {
-      const shooting = entity.get(ShootingComponent);
-      shooting.setActive(!this.ballsMoving && this.cueBallInGame);
-    }
+    const ballInHandComponent = this.ballInHandQuery.entities[0].get(BallInHandComponent);
+    ballInHandComponent.setActive(!ballsMoving && ballInHand);
+    const shooting = this.shootingQuery.entities[0].get(ShootingComponent);
+    shooting.setActive(!ballsMoving && cueBallInGame);
   }
 }
