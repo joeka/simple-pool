@@ -60,6 +60,7 @@ export class Ball extends Actor {
     this.holed = false;
 
     this.addTag("Ball");
+    this.addTag(BallType[this.type]);
     this.collider.useCircleCollider(Ball.radius);
     this.body.collisionType = CollisionType.Active;
     this.body.bounciness = 0.8;

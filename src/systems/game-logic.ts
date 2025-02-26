@@ -1,40 +1,33 @@
-import { System, Query, SystemType, World, BodyComponent } from "excalibur";
+import { System, Query, SystemType, World } from "excalibur";
 import { ShootingComponent } from "../components/shooting";
-import { Ball, BallType } from "../actors/ball";
+import { Ball } from "../actors/ball";
 
 export class GameLogicSystem extends System {
   shootingQuery: Query<typeof ShootingComponent>;
-  bodyQuery: Query<typeof BodyComponent>;
-  systemType: SystemType
+  balls: Ball[];
+  cueBall: Ball;
+  systemType: SystemType;
 
-  private ballsMoving: boolean = false
-  private cueBallInGame: boolean = false
+  private ballsMoving: boolean = false;
 
   constructor(world: World) {
     super();
     this.shootingQuery = world.query([ShootingComponent]);
-    this.bodyQuery = world.query([BodyComponent]);
+    this.balls = world.queryTags(["Ball"]).entities as Ball[];
+    this.cueBall = world.queryTags(["Cue"]).entities[0] as Ball;
     this.systemType = SystemType.Update;
   }
-  
+
   update(delta: number) {
     this.ballsMoving = false
-    this.cueBallInGame = false
-
-    for (let entity of this.bodyQuery.entities) {
-      const body = entity.get(BodyComponent);
-      if (body.owner?.hasTag("Ball")) {
-        const ball = body.owner as Ball;
-        const thatBallMoving = !ball.isStill();
-        
-        this.ballsMoving = this.ballsMoving || thatBallMoving;
-        this.cueBallInGame = this.cueBallInGame || (ball.type === BallType.Cue && !ball.holed)
-      }
+    for (let ball of this.balls) {
+      const thatBallMoving = !ball.isStill();
+      this.ballsMoving = this.ballsMoving || thatBallMoving;
     }
 
     for (let entity of this.shootingQuery.entities) {
       const shooting = entity.get(ShootingComponent);
-      shooting.setActive(!this.ballsMoving && this.cueBallInGame);
+      shooting.setActive(!this.ballsMoving && !this.cueBall.holed);
     }
   }
 }
