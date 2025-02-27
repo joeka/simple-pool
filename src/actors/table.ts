@@ -49,7 +49,7 @@ export class Table extends Actor {
       // anchor: vec(0, 0), // Actors default center colliders and graphics with anchor (0.5, 0.5)
       // collisionType: CollisionType.Active, // Collision Type Active means this participates in collisions read more https://excaliburjs.com/docs/collisiontypes
     });
-
+    this.addTag("Table");
   }
 
   override onInitialize() {

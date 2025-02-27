@@ -8,8 +8,8 @@ export class ShootingComponent extends Component {
   private engine: Engine | undefined;
 
   private cue: Cue;
-  private isActive: boolean;
-  private isCharging: boolean;
+  private active: boolean;
+  private charging: boolean;
   private cueDirection: Vector;
   private clickPosition: Vector;
   private chargingStrength: number;
@@ -18,19 +18,23 @@ export class ShootingComponent extends Component {
   constructor() {
     super();
     this.cue = new Cue();
-    this.isActive = false;
-    this.isCharging = false;
+    this.active = false;
+    this.charging = false;
     this.cueDirection = Vector.Zero;
     this.clickPosition = Vector.Zero;
     this.chargingStrength = 0;
   }
 
-  public setActive(active: boolean){
-    if (active !== this.isActive) {
+  public setActive(active: boolean) {
+    if (active !== this.active) {
       // fade cue in/out when active state changes
       this.cue.actions.fade(Number(active), 200);
+      this.active = active;
     }
-    this.isActive = active;
+  }
+
+  public isActive(): boolean {
+    return this.active;
   }
 
   onAdd(owner: Ball): void {
@@ -51,23 +55,23 @@ export class ShootingComponent extends Component {
   }
 
   private onPointerDown = (event: PointerEvent): void => {
-    if (!this.isActive)
+    if (!this.active)
       return;
 
-    if (this.isCharging) {
-      this.isCharging = false;
+    if (this.charging) {
+      this.charging = false;
       this.shoot();
       return;
     }
-    this.isCharging = true;
+    this.charging = true;
     this.clickPosition = event.coordinates.worldPos;
   }
 
   private onPointerMove = (event: PointerEvent): void => {
-    if (!this.isActive)
+    if (!this.active)
       return;
-    
-    if (this.isCharging) {
+
+    if (this.charging) {
       this.chargeShot(event.coordinates.worldPos);
       return;
     }
@@ -80,7 +84,7 @@ export class ShootingComponent extends Component {
     this.cue.pos = ballPosition.sub(this.cueDirection.scale(this.ballRadius))
     this.cue.rotation = this.cueDirection.toAngle();
   }
-  
+
   private chargeShot = (pointerPosition: Vector) => {
     const ballPosition = this.owner.pos;
     this.chargingStrength = this.clickPosition.sub(pointerPosition).magnitude;
@@ -97,5 +101,6 @@ export class ShootingComponent extends Component {
   private applyVelocity = (): void => {
     const velocity = this.cueDirection.scale(this.chargingStrength * 10); // arbitrary multiplier for shooting strength
     this.owner.vel = velocity;
+    this.setActive(false);
   }
 }
