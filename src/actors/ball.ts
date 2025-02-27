@@ -48,7 +48,6 @@ export class Ball extends Actor {
   type: BallType
   friction_vel_loss: number;
   holed: boolean;
-  inHand: boolean;
   collisions: number;
 
   constructor(config: BallArgs) {
@@ -60,7 +59,6 @@ export class Ball extends Actor {
     this.type = typeFromNumber(config.number);
     this.friction_vel_loss = 2;
     this.holed = false;
-    this.inHand = false;
 
     this.collisions = 0;
 
@@ -117,7 +115,6 @@ export class Ball extends Actor {
           scale: Vector.Zero,
           duration: 100
         })
-        .moveTo(vec(975, 400), 1000)
         .scaleTo(
           Vector.One,
           vec(4, 4))
@@ -141,15 +138,11 @@ export class Ball extends Actor {
     if (this.type != BallType.Cue)
       return;
 
-    if (this.inHand != inHand) {
-      this.inHand = inHand;
-
-      if (inHand) {
-        this.body.collisionType = CollisionType.Passive;
-        this.holed = false;
-      } else {
-        this.body.collisionType = CollisionType.Active;
-      }
+    if (inHand) {
+      this.body.collisionType = CollisionType.Passive;
+    } else {
+      this.holed = false;
+      this.body.collisionType = CollisionType.Active;
     }
   }
 

@@ -13,6 +13,7 @@ export class Game extends Scene {
 
         const ballSpawner = new BallSpawner();
         ballSpawner.placeBalls(engine, vec(500, 400), Ball.radius);
+
         const cueBall = new Ball({ pos: vec(975, 400) });
         this.add(cueBall);
 
