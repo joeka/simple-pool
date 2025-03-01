@@ -107,31 +107,19 @@ export class Ball extends Actor {
     const offset = holePos.sub(this.pos);
     const velocity = !!this.vel.magnitude ? this.vel.magnitude : 1;
 
-    if (this.type == BallType.Cue) {
-
-      this.body.collisionType = CollisionType.Passive;
-      this.actions.moveBy(offset, velocity)
-        .scaleTo({
-          scale: Vector.Zero,
-          duration: 100
-        })
-        .scaleTo(
-          Vector.One,
-          vec(4, 4))
-        .callMethod(
-          () => this.setInHand(true)
-        );
-    } else {
-      this.actions
-        .moveBy(offset, velocity)
-        .scaleTo({
-          scale: Vector.Zero,
-          duration: 100
-        })
-        .callMethod(
-          () => this.removeBall()
-        );
-    }
+    this.actions
+      .moveBy(offset, velocity)
+      .scaleTo(Vector.Zero, vec(15, 15))
+      .callMethod(
+        () => {
+          if (this.type == BallType.Cue) {
+            this.setInHand(true);
+            hole.removeCueBall();
+          } else {
+            this.removeBall()
+          }
+        }
+      );
   }
 
   setInHand(inHand: boolean) {
@@ -140,6 +128,8 @@ export class Ball extends Actor {
 
     if (inHand) {
       this.body.collisionType = CollisionType.Passive;
+      this.angularVelocity = 0;
+      this.actions.scaleTo(Vector.One, vec(4, 4));
     } else {
       this.holed = false;
       this.body.collisionType = CollisionType.Active;

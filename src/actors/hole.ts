@@ -1,5 +1,5 @@
 import { Actor, Collider, CollisionContact, CollisionType, Side, Vector } from "excalibur";
-import { Ball } from "./ball";
+import { Ball, BallType } from "./ball";
 
 
 export type HoleArgs = {
@@ -19,6 +19,10 @@ export class Hole extends Actor {
       collisionType: CollisionType.Passive
     });
     this.radius = radius;
+  }
+
+  removeCueBall() {
+    this.holedBalls = this.holedBalls.filter(ball => ball.type !== BallType.Cue);
   }
 
   override onPreCollisionResolve(self: Collider, other: Collider, side: Side, contact: CollisionContact): void {
