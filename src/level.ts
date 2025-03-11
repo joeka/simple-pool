@@ -18,6 +18,7 @@ export class Game extends Scene {
         this.add(cueBall);
 
         this.world.add(GameLogicSystem);
+        // this.world.add(NetworkingSystem); // disable for now
     }
 
     override onPreLoad(loader: DefaultLoader): void {

@@ -8,6 +8,7 @@ export class Cue extends Actor {
       name: "Cue",
       anchor: vec(1, 0.5)
     });
+    this.addTag("Cue");
   }
 
   override onInitialize() {
